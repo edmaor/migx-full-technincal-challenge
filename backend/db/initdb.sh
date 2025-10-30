@@ -1,1 +1,1 @@
-mongoimport --db migx --collection participants --file Downloads/participants.json --jsonArray
+mongoimport --db migx --collection participants --file ./participants.json --jsonArray
