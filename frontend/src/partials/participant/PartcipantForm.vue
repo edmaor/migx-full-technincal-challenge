@@ -1,17 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Participant } from "@/domain/Participant";
-
-interface FormState {
-  id: string;
-  participant_id: string;
-  subject_id: string;
-  study_group: string;
-  enrollment_date: string;
-  age: number | null;
-  status: string;
-  gender: string;
-}
+import {Participant, type ParticipantData} from "@/domain/Participant";
+import {useParticipantStore} from "@/stores/ParticipantStore.ts";
 
 const props = defineProps<{
   mode: "create" | "edit"; // Determine form mode
@@ -19,13 +9,14 @@ const props = defineProps<{
 }>();
 
 // Reactive form state
-const formState = ref<FormState>({
+const today = new Date();
+const formState = ref<ParticipantData>({
   id: "",
   participant_id: "",
   subject_id: "",
   study_group: "",
-  enrollment_date: "",
-  age: null,
+  enrollment_date: today.toLocaleDateString('sv-SE'),
+  age: 20,
   status: "",
   gender: "",
 });
@@ -68,17 +59,38 @@ const validateForm = (): boolean => {
 };
 
 // Form submission handler
-const handleSubmit = () => {
+const participantStore = useParticipantStore()
+const handleSubmit = async () => {
   if (validateForm()) {
     if (props.mode === "create") {
-      console.log("Creating new participant:", formState.value);
-      // Add API call or store logic here for creating a new participant
+      const response = await participantStore.addParticipant(new Participant(formState.value))
+      console.log(response)
+      
     } else if (props.mode === "edit") {
-      console.log("Updating participant:", formState.value);
-      // Add API call or store logic here for updating the participant
+      // Get diff original participant and form state
+      const diff = compareDicts(props.participant, formState.value)
+      const response = await participantStore.updateParticipant(formState.value.id, diff )
+      console.log(response)
     }
   }
 };
+
+function compareDicts(a: any, b: any) {
+  const diff: Record<string, { oldValue: any; newValue: any }> = {};
+
+  const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+
+  for (const key of keys) {
+    if (a[key] !== b[key]) {
+      diff[key] = {
+        oldValue: a[key] === undefined ? null : a[key],
+        newValue: b[key] === undefined ? null : b[key],
+      };
+    }
+  }
+
+  return diff;
+}
 </script>
 
 <template>
@@ -93,6 +105,7 @@ const handleSubmit = () => {
           type="text"
           class="border rounded w-full p-2"
           :class="{ 'border-red-500': errors.participant_id }"
+          :disabled="mode === 'edit'"
         />
         <p v-if="errors.participant_id" class="text-red-500 text-sm">
           {{ errors.participant_id }}
@@ -108,6 +121,7 @@ const handleSubmit = () => {
           type="text"
           class="border rounded w-full p-2"
           :class="{ 'border-red-500': errors.subject_id }"
+          :disabled="mode === 'edit'"
         />
         <p v-if="errors.subject_id" class="text-red-500 text-sm">
           {{ errors.subject_id }}
@@ -117,13 +131,16 @@ const handleSubmit = () => {
       <!-- Study Group -->
       <div>
         <label for="study_group" class="block mb-1 font-medium">Study Group</label>
-        <input
-          id="study_group"
+        <select
+          id="gender"
           v-model="formState.study_group"
-          type="text"
           class="border rounded w-full p-2"
-          :class="{ 'border-red-500': errors.study_group }"
-        />
+          :class="{ 'border-red-500': errors.gender }"
+        >
+          <option value="" disabled>Select gender</option>
+          <option value="treatment">Treatment</option>
+          <option value="control">Control</option>
+        </select>
         <p v-if="errors.study_group" class="text-red-500 text-sm">
           {{ errors.study_group }}
         </p>
@@ -170,7 +187,8 @@ const handleSubmit = () => {
         >
           <option value="" disabled>Select status</option>
           <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          <option value="completed">Completed</option>
+          <option value="withdrawn">Withdrawn</option>
         </select>
         <p v-if="errors.status" class="text-red-500 text-sm">
           {{ errors.status }}
@@ -187,9 +205,9 @@ const handleSubmit = () => {
           :class="{ 'border-red-500': errors.gender }"
         >
           <option value="" disabled>Select gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+          <option value="Other">Other</option>
         </select>
         <p v-if="errors.gender" class="text-red-500 text-sm">
           {{ errors.gender }}

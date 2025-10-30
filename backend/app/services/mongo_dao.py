@@ -41,13 +41,13 @@ class MongoDAO:
         result = self.collection.update_many(query, {"$set": new_values})
         return result.modified_count
 
-    def delete(self, query: Dict[str, Any]) -> int:
+    def delete(self, id: str) -> int:
         """
         Delete documents matching a query.
-        :param query: Query to identify documents to delete.
+        :param id: The id of the document to delete.
         :return: Count of deleted documents.
         """
-        result = self.collection.delete_many(query)
+        result = self.collection.delete_one({"_id": ObjectId(id)})
         return result.deleted_count
 
     def find_by_id(self, id: str):

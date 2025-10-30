@@ -11,7 +11,11 @@ router = APIRouter(tags=["Participant Manager"], prefix="/migx/participant")
 
 @router.post("s", response_model=Participant, response_model_by_alias=False, status_code=status.HTTP_201_CREATED)
 async def create_participant(participant: Participant):
-    return {"message": "Hello World"}
+    state, participant = ParticipantManagerCTL.create_participant(participant)
+    if state == "PARTICIPANT":
+        return participant
+    else:
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": f"Error creating participant {participant}"})
 
 @router.get("s", response_model=List[Participant], response_model_by_alias=False)
 async def get_all_participants():
