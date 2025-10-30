@@ -9,4 +9,5 @@ class Participant(BaseModel):
     study_group: str = None
     enrollment_date: str = None
     status: str = None
+    age: int = None
     gender: str = None

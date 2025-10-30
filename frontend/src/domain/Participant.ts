@@ -4,6 +4,7 @@ export interface ParticipantData {
     subject_id: string;
     study_group: string;
     enrollment_date: string;
+    age: number
     status: string;
     gender: string;
 }
@@ -15,6 +16,7 @@ export class Participant implements ParticipantData {
     study_group: string;
     enrollment_date: string;
     status: string;
+    age: number;
     gender: string;
 
     constructor(data: ParticipantData) {
@@ -24,6 +26,7 @@ export class Participant implements ParticipantData {
         this.study_group = data.study_group;
         this.enrollment_date = data.enrollment_date;
         this.status = data.status;
+        this.age = data.age;
         this.gender = data.gender;
     }
 }

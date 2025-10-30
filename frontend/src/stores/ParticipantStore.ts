@@ -8,16 +8,43 @@ export const useParticipantStore = defineStore(
   () => {
       const participants = ref<Participant[]>([])
 
-      async function addParticipant(participant: Participant) {}
+      async function addParticipant(participant: Participant) {
+          const response = await ParticipantDataService.createParticipant(participant)
+          if (response) {
+              participants.value.push(response);
+          }
+      }
+
       async function getParticipants() {
           const response = await ParticipantDataService.getParticipants()
           if (response) {
               participants.value = response;
           }
       }
-      async function getParticipant(participant: string) {}
-      async function updateParticipant(participant: Participant) {}
-      async function removeParticipant(participant: string) {}
+
+      async function getParticipant(participant: string) {
+          const response = await ParticipantDataService.getParticipant(participant)
+          if (response) {
+              return response;
+          }
+          return null;
+      }
+
+      async function updateParticipant(participant: string, data: Partial<ParticipantData>) {
+          const response = await ParticipantDataService.patchParticipant(participant, data)
+          if (response) {
+              return response;
+          }
+          return null;
+      }
+
+      async function removeParticipant(participant: string) {
+          const response = await ParticipantDataService.deleteParticipant(participant)
+          if (response) {
+              return response;
+          }
+      }
+
       return { participants, addParticipant, getParticipants, getParticipant, updateParticipant, removeParticipant }
   },
     {

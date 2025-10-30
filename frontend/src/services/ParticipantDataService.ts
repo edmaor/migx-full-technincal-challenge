@@ -4,7 +4,7 @@ import {Participant, type ParticipantData} from "@/domain/Participant.ts";
 class ParticipantDataService {
     async createParticipant(participant: ParticipantData) {
         try {
-            const response = await http.post("/participant", participant)
+            const response = await http.post("/participants", participant)
             if (response.status === 201) {
                 return response.data;
             } else {
@@ -17,7 +17,7 @@ class ParticipantDataService {
 
     async getParticipants() {
         try{
-            const response = await http.get("/participant")
+            const response = await http.get("/participants")
             if (response.status === 200 && Array.isArray(response.data)) {
                 return response.data.map((item: any) => new Participant(item))
             } else return []
