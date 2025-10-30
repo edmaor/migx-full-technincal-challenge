@@ -89,9 +89,9 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {useRouter} from "vue-router";
-import {useUserStore} from "@/stores/UserStore.ts";
+// import {useUserStore} from "@/stores/UserStore.ts";
 
-const userStore = useUserStore();
+// const userStore = useUserStore();
 const router = useRouter();
 
 const email = ref("")
@@ -110,9 +110,9 @@ function togglePasswordVisibility() {
     }
   }
 }
-function validateSignInForm () {
-  return (password.value.trim() != "" && email.value.trim() != "");
-}
+// function validateSignInForm () {
+//   return (password.value.trim() != "" && email.value.trim() != "");
+// }
 function handleSignIn() {
   // if (validateSignInForm()) {
   //   userStore.signIn(email.value, password.value).then((state) => {
@@ -124,11 +124,11 @@ function handleSignIn() {
 }
 
 
-async function validateUserAuthentication(state: string) {
-  if (state === "CONNECTED" || state === "USER_IDENTIFIED" || state === "USER_CREATED") {
-    setTimeout(() => router.push('/dashboard'),800)
-  } else if (state === "INVALID_CREDENTIALS") {
-  } else {
-  }
-}
+// async function validateUserAuthentication(state: string) {
+//   if (state === "CONNECTED" || state === "USER_IDENTIFIED" || state === "USER_CREATED") {
+//     setTimeout(() => router.push('/dashboard'),800)
+//   } else if (state === "INVALID_CREDENTIALS") {
+//   } else {
+//   }
+// }
 </script>

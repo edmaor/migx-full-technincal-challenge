@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import {computed, ref} from "vue";
+import { ref} from "vue";
 
 // import type { User } from "@/domain/user.ts";
 import AuthService from '@/services/AuthService.ts'
@@ -36,12 +36,13 @@ export const useUserStore = defineStore(
             try {
                 const response = await AuthService.signIn({email:email, password:password})
                 if(response.status === 200) {
-                    const token = response.data.session_token
-                    const token_state = validateUserToken(token)
-                    if (token_state === "USER_TOKEN_VALIDATED") {
-                        return response.data.state;
-                    }
-                    return token_state
+                    // const token = response.data.session_token
+                    // const token_state = validateUserToken(token)
+                    // if (token_state === "USER_TOKEN_VALIDATED") {
+                    //     return response.data.state;
+                    // }
+                    // return token_state
+                    return "USER_TOKEN_VALIDATED"
                 } else {
                     return response.data.state;
                 }
@@ -51,41 +52,22 @@ export const useUserStore = defineStore(
             }
         }
 
-        async function oauthSignIn(token: string) {
-            try {
-                const response = await AuthService.signIn({token: token})
-                if(response.status === 200 || response.status === 201) {
-                    const token = response.data.session_token
-                    const token_state = validateUserToken(token)
-                    if (token_state === "USER_TOKEN_VALIDATED") {
-                        return response.data.state;
-                    }
-                    return token_state
-                } else {
-                    return response.data.state;
-                }
-            } catch (e) {
-                console.error(e);
-                throw e;
-            }
-        }
-
-        function validateUserToken(token: any) {
-            localStorage.setItem('jwt', token)
-            const decoded: JwtPayload|null = decodeToken(token);
-            if ( decoded && decoded.sub ) {
-                user.value = {
-                    id: decoded.sub.uid,
-                    name: decoded.sub.name,
-                    email: decoded.sub.email,
-                    clubs: decoded.sub.clubs,
-                    roles: decoded.sub.roles
-                }
-                session_token.value = token;
-                return "USER_TOKEN_VALIDATED"
-            }
-            return "ERROR_VALIDATING_USER_TOKEN"
-        }
+        // function validateUserToken(token: any) {
+        //     localStorage.setItem('jwt', token)
+        //     const decoded: JwtPayload|null = decodeToken(token);
+        //     if ( decoded && decoded.sub ) {
+        //         user.value = {
+        //             id: decoded.sub.uid,
+        //             name: decoded.sub.name,
+        //             email: decoded.sub.email,
+        //             clubs: decoded.sub.clubs,
+        //             roles: decoded.sub.roles
+        //         }
+        //         session_token.value = token;
+        //         return "USER_TOKEN_VALIDATED"
+        //     }
+        //     return "ERROR_VALIDATING_USER_TOKEN"
+        // }
 
         function signOut() {
             // Call BE to invalidate the token
@@ -107,18 +89,18 @@ export const useUserStore = defineStore(
             }
         }
 
-        const isSessionTokenValid = computed(() => {
-            if (session_token.value) {
-                const decoded = decodeToken(session_token.value);
-                if (decoded) {
-                    const date = new Date().getTime()/1000;
-                    return date>decoded.iat && date<decoded.exp
-                }
-                return false
-            }
-            return false;
-        })
-        return { user, session_token, signUp, signIn, oauthSignIn, signOut, isSessionTokenValid, resetPassword };
+        // const isSessionTokenValid = computed(() => {
+        //     if (session_token.value) {
+        //         const decoded = decodeToken(session_token.value);
+        //         if (decoded) {
+        //             const date = new Date().getTime()/1000;
+        //             return date>decoded.iat && date<decoded.exp
+        //         }
+        //         return false
+        //     }
+        //     return false;
+        // })
+        return { user, session_token, signUp, signIn, resetPassword, signOut };
     },
     {
         persist: {

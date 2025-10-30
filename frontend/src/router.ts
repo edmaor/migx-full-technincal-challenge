@@ -12,7 +12,7 @@ import Metrics from "@/pages/Metrics.vue";
 
 // ENTITIES
 import Participants from "@/pages/Participants.vue";
-import {useUserStore} from "@/stores/UserStore.ts";
+// import {useUserStore} from "@/stores/UserStore.ts";
 
 const routerHistory = createWebHistory();
 
@@ -76,6 +76,7 @@ router.beforeEach((to, from, next) => {
 	// } else {
 	// 	next();
 	// }
+    console.log("beforeEach", to, from, next)
     next()
 });
 

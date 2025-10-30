@@ -13,7 +13,7 @@
                 </div>
               </div>
               <div class="flex justify-end mt-6">
-                <button class="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white whitespace-nowrap" @click.prevent="sendEmailValidationCode()">Send Code</button>
+                <button class="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white whitespace-nowrap" @click.prevent="()=> {}">Send Code</button>
               </div>
             </form>
             <form id="code-form" v-else-if="resetPasswordState === 'CODE'">
@@ -28,7 +28,7 @@
                 </div>
               </div>
               <div class="flex justify-end mt-6">
-                <button class="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white whitespace-nowrap" @click.prevent="matchEmailValidationCode()">Validate Code</button>
+                <button class="btn bg-gray-900 text-gray-100 hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-800 dark:hover:bg-white whitespace-nowrap" @click.prevent="()=> {}">Validate Code</button>
               </div>
             </form>
             <form id="code-form" v-else-if="resetPasswordState === 'PASSWORD'">
@@ -162,23 +162,19 @@
 
 <script setup lang="ts">
 import {ref} from "vue";
-import {useUserStore} from "@/stores/UserStore.ts";
-import {useRouter} from "vue-router";
+// import {useUserStore} from "@/stores/UserStore.ts";
+// import {useRouter} from "vue-router";
 
-const emit = defineEmits<{
-  (e: 'message', payload: { message: string, type: string }): void;
-}>();
+// const router = useRouter();
 
-const router = useRouter();
-
-const userStore = useUserStore();
+// const userStore = useUserStore();
 
 const resetPasswordState = ref("EMAIL")
 const email = ref("")
 const code = ref("")
 const password = ref("")
 const password_repeat = ref("")
-const token = ref("")
+// const token = ref("")
 
 const password_input = ref<HTMLInputElement | null>(null)
 const password_input_type = ref<string>('password')
@@ -194,39 +190,11 @@ function togglePasswordVisibility() {
   }
 }
 
-async function sendEmailValidationCode () {
-  console.log("Sending email")
-  await userStore.sendEmailValidationCode(email.value).then(() => {
-    console.log("Email sent")
-    emit('message', { message: t('common.message.auth.emailSent'), type: "notification" });
-    resetPasswordState.value = "CODE"
-  })
-}
-
-async function matchEmailValidationCode () {
-  await userStore.matchEmailValidationCode(email.value, code.value).then((response) => {
-    if (response.state === "VALID_CODE") {
-      emit('message', { message: t('common.message.auth.passwordChange'), type: "success" });
-      token.value = response.token
-      resetPasswordState.value = "PASSWORD"
-    } else {
-      emit('message', { message: t('common.message.auth.invalidCredentials'), type: "error" });
-    }
-
-  })
-}
-
 async function resetPassword () {
-  if (password.value === password_repeat.value) {
-    await userStore.resetPassword(password.value, token.value).then((response) => {
-      if (response.state === "PASSWORD_RESET") {
-        emit('message', {message: t('common.message.auth.passwordChangeSuccess'), type: "success"});
-        router.push('/signin')
-      } else {
-        emit('message', {message: t('common.message.auth.passwordChangeError'), type: "error"});
-      }
-    })
-  }
-  else emit('message', {message: t('common.message.auth.passwordChangeMissmatch'), type: "error"})
+  // if (password.value === password_repeat.value) {
+  //   await userStore.resetPassword(password.value, token.value).then((response) => {
+  //     console.log(response)
+  //   }
+  // }
 }
 </script>
