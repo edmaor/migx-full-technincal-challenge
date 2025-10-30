@@ -50,6 +50,15 @@ class MongoDAO:
         result = self.collection.delete_many(query)
         return result.deleted_count
 
+    def find_by_id(self, id: str):
+        """
+        Retrieve a single document by ID.
+        :param id:
+        :return:
+        """
+        document = self.collection.find_one({"_id": ObjectId(id)})
+        return self._convert_object_id(document) if document else None
+
     def find_one(self, query: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
         Retrieve a single document matching a query.

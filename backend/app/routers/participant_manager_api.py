@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from typing import List
 
 from starlette import status
+from starlette.responses import JSONResponse
 
 from app.domain.participant import Participant
 from app.control.participant_manager_ctl import ParticipantManagerCTL
@@ -19,7 +20,11 @@ async def get_all_participants():
 
 @router.get("/{id}")
 async def get_participant(id: str):
-    return {"message": f"Hello {id}"}
+    state, participant = ParticipantManagerCTL.get_participant(id)
+    if state == "PARTICIPANT":
+        return participant
+    else:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": f"Participant {id} not found"})
 
 @router.patch("/{id}")
 async def patch_participant(id: str, participant: Participant):
