@@ -39,7 +39,7 @@ class ParticipantDataService {
         }
     }
 
-    async patchParticipant(id: string, participant: Partial<ParticipantData>) {
+    async patchParticipant(id: string, participant: Partial<ParticipantData>): Promise<Participant | null | undefined> {
         try{
             const response = await http.patch(`/participant/${id}`, participant)
             if (response.status == 200 && response.data) {

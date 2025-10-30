@@ -30,9 +30,13 @@ async def get_participant(id: str):
     else:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": f"Participant {id} not found"})
 
-@router.patch("/{id}")
+@router.patch("/{id}", response_model=Participant, response_model_by_alias=False)
 async def patch_participant(id: str, participant: Participant):
-    return {"message": f"Hello {id}"}
+    state, participant = ParticipantManagerCTL.patch_participant(id, participant)
+    if state == "PARTICIPANT":
+        return participant
+    else:
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST, content={"message": f"Participant {id} not found or invalid fields"})
 
 @router.delete("/{id}")
 async def delete_participant(id: str):

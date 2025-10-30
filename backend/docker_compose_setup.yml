@@ -1,0 +1,32 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app-container
+    env_file:
+      - ./app/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    volumes:
+      - /app
+      - /app/venv
+    environment:
+      - PYTHONPATH=/app
+
+  db:
+    image: mongo:6
+    container_name: mongodb-container
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d # Automatically runs the init scripts
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+volumes:
+  mongo-data:

@@ -69,8 +69,10 @@ const handleSubmit = async () => {
     } else if (props.mode === "edit") {
       // Get diff original participant and form state
       const diff = compareDicts(props.participant, formState.value)
-      const response = await participantStore.updateParticipant(formState.value.id, diff )
-      console.log(response)
+      if (Object.keys(diff).length === 0) {
+        return
+      }
+      await participantStore.updateParticipant(formState.value.id, diff )
     }
   }
 };
@@ -82,10 +84,7 @@ function compareDicts(a: any, b: any) {
 
   for (const key of keys) {
     if (a[key] !== b[key]) {
-      diff[key] = {
-        oldValue: a[key] === undefined ? null : a[key],
-        newValue: b[key] === undefined ? null : b[key],
-      };
+      diff[key] = b[key]
     }
   }
 

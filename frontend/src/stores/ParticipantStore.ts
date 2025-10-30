@@ -33,6 +33,12 @@ export const useParticipantStore = defineStore(
       async function updateParticipant(participant: string, data: Partial<ParticipantData>) {
           const response = await ParticipantDataService.patchParticipant(participant, data)
           if (response) {
+              const index = participants.value.findIndex((participant) => participant.id === response.id);
+              if (index !== -1) {
+                  participants.value[index] = response;
+              } else {
+                  participants.value.push(response);
+              }
               return response;
           }
           return null;

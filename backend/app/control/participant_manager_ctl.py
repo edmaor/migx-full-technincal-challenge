@@ -59,8 +59,13 @@ class ParticipantManagerCTL:
         else:
             updated_participant = original_participant.copy()
             updated_participant.update(participant.model_dump(exclude_unset=True))
-            cls.participant_dao.dao.update({"_id": id}, updated_participant.model_dump())
-            return "PARTICIPANT", Participant(**updated_participant)
+            updated_participant.pop("_id", None)
+            if cls.participant_dao.dao.update_one(id, updated_participant):
+                updated_participant = Participant(**updated_participant)
+                updated_participant.id = id
+                return "PARTICIPANT", updated_participant
+            else:
+                return "PARTICIPANT_NOT_UPDATED", None
 
     @classmethod
     def delete_participant(cls, id: str):

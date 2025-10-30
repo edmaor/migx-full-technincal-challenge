@@ -43,6 +43,10 @@ class MongoDAO:
         result = self.collection.update_many(query, {"$set": new_values})
         return result.modified_count
 
+    def update_one(self, id: str, data: Dict[str, Any]):
+        result = self.collection.update_one({"_id": ObjectId(id)}, {"$set": data})
+        return result.modified_count == 1
+
     def delete(self, id: str) -> str | None:
         """
         Delete documents matching a query.
