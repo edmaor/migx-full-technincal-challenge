@@ -2,17 +2,19 @@ services:
   # MongoDB Database
   mongodb:
     image: mongo:7.0
-    container_name: migx-mongodb
+    container_name: mongodb_migx
+    restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-admin123}
-      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-migx}
+      MONGO_DB_HOST: mongodb
+      MONGO_DB_PORT: 27017
+      MONGO_DB_ROOT_USERNAME: admin
+      MONGO_DB_ROOT_PASSWORD: admin123
+      MONGO_DB_DATABASE: migx
     ports:
-      - "${MONGO_PORT:-27017}:27017"
+      - "27017:27017"
     volumes:
       - mongodb_data:/data/db
-      - mongodb_config:/data/configdb
-      - ./backend/db/initdb.sh:/docker-entrypoint-initdb.d/01-init.sh:ro
+      - ./backend/db/initdb.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro
       - ./backend/db/participants.json:/docker-entrypoint-initdb.d/participants.json:ro
     networks:
       - migx-network
@@ -32,8 +34,12 @@ services:
       dockerfile: Dockerfile
     container_name: migx-backend
     environment:
-      MONGODB_URL: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-admin123}@mongodb:27017
-      MONGODB_DATABASE: ${MONGO_DATABASE:-migx}
+      MONGO_DB_HOST: mongodb
+      MONGO_DB_PORT: 27017
+      MONGO_DB_ROOT_USERNAME: admin
+      MONGO_DB_ROOT_PASSWORD: admin123
+      MONGO_DB_DATABASE: migx
+      MONGODB_URL: mongodb://admin:admin123@mongodb:27017
       PYTHONUNBUFFERED: 1
       PYTHONPATH: /app
     ports:
