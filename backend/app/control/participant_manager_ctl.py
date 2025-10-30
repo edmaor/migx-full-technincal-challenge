@@ -14,9 +14,12 @@ class ParticipantManagerCTL:
         :param participant:
         :return:
         """
-        participant_id = cls.participant_dao.dao.create(participant.model_dump())
+        participant_data = participant.model_dump()
+        participant_data.pop("id", None)
+        participant_id = cls.participant_dao.dao.create(participant_data)
         if participant_id:
-            return "PARTICIPANT", Participant(**participant.model_dump())
+            participant.id = participant_id
+            return "PARTICIPANT", participant
         else:
             return "PARTICIPANT_NOT_CREATED", None
 
