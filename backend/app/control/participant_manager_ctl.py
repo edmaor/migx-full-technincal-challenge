@@ -1,8 +1,9 @@
+from app.data.participant_dao import ParticipantDAO
 from app.domain.participant import Participant
 
 
-class ParticipantManagerCtl:
-    participant_dao = None
+class ParticipantManagerCTL:
+    participant_dao = ParticipantDAO()
 
     @classmethod
     def create_participant(cls, participant: Participant):
@@ -10,7 +11,8 @@ class ParticipantManagerCtl:
 
     @classmethod
     def get_all_participants(cls):
-        pass
+        participants = [Participant(**participant) for participant in cls.participant_dao.dao.read()]
+        return participants
 
     @classmethod
     def get_participant(cls, id: str):

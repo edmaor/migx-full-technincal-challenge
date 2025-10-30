@@ -2,6 +2,8 @@ from pymongo import MongoClient
 from pymongo.collection import Collection
 from typing import Any, Dict, List, Optional
 
+from bson import ObjectId
+
 class MongoDAO:
     def __init__(self, connection_string: str, database_name: str, collection_name: str):
         """
@@ -26,7 +28,8 @@ class MongoDAO:
         :param query: Query to filter documents (default: empty query to return all).
         :return: List of matching documents.
         """
-        return list(self.collection.find(query))
+        documents = list(self.collection.find(query))
+        return [self._convert_object_id(doc) for doc in documents]
 
     def update(self, query: Dict[str, Any], new_values: Dict[str, Any]) -> int:
         """
@@ -53,10 +56,22 @@ class MongoDAO:
         :param query: Query to find a single document.
         :return: A matching document, or None if not found.
         """
-        return self.collection.find_one(query)
+        document = self.collection.find_one(query)
+        return self._convert_object_id(document) if document else None
 
     def close_connection(self):
         """
         Close the MongoDB connection.
         """
         self.client.close()
+
+    @staticmethod
+    def _convert_object_id(document: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Convert ObjectId fields (like `_id`) to strings in a document.
+        :param document: A MongoDB document.
+        :return: The document with ObjectId fields converted to strings.
+        """
+        if "_id" in document and isinstance(document["_id"], ObjectId):
+            document["_id"] = str(document["_id"])
+        return document
