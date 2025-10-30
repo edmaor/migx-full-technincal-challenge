@@ -3,6 +3,8 @@ from pymongo.collection import Collection
 from typing import Any, Dict, List, Optional
 
 from bson import ObjectId
+from pymongo.results import DeleteResult
+
 
 class MongoDAO:
     def __init__(self, connection_string: str, database_name: str, collection_name: str):
@@ -41,14 +43,14 @@ class MongoDAO:
         result = self.collection.update_many(query, {"$set": new_values})
         return result.modified_count
 
-    def delete(self, id: str) -> int:
+    def delete(self, id: str) -> str | None:
         """
         Delete documents matching a query.
         :param id: The id of the document to delete.
         :return: Count of deleted documents.
         """
         result = self.collection.delete_one({"_id": ObjectId(id)})
-        return result.deleted_count
+        return id if result.deleted_count == 1 else None
 
     def find_by_id(self, id: str):
         """

@@ -39,10 +39,10 @@ export const useParticipantStore = defineStore(
       }
 
       async function removeParticipant(participant: string) {
-          const response = await ParticipantDataService.deleteParticipant(participant)
-          if (response) {
-              return response;
+          if ( await ParticipantDataService.deleteParticipant(participant)) {
+              participants.value = participants.value.filter(p => p.id !== participant)
           }
+          return participants.value;
       }
 
       return { participants, addParticipant, getParticipants, getParticipant, updateParticipant, removeParticipant }

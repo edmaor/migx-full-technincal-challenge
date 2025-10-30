@@ -97,4 +97,8 @@ function handleEditParticipant(participant: Participant) {
   editParticipant.value = participant
   showEditDialog.value = true
 }
+
+function handleDeleteParticipant(participant: Participant) {
+  participantStore.removeParticipant(participant.id)
+}
 </script>

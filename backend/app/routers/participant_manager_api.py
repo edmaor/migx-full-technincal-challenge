@@ -36,4 +36,8 @@ async def patch_participant(id: str, participant: Participant):
 
 @router.delete("/{id}")
 async def delete_participant(id: str):
-    return {"message": f"Hello {id}"}
+    state, participant = ParticipantManagerCTL.delete_participant(id)
+    if state == "PARTICIPANT_DELETED":
+        return participant
+    else:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"message": f"Participant {id} not found"})

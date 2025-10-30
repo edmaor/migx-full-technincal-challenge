@@ -61,4 +61,9 @@ class ParticipantManagerCTL:
 
     @classmethod
     def delete_participant(cls, id: str):
-        cls.participant_dao.dao.delete(id)
+        participant = cls.participant_dao.dao.delete(id)
+
+        if not participant:
+            return "PARTICIPANT_NOT_FOUND", None
+        else:
+            return "PARTICIPANT_DELETED", participant
